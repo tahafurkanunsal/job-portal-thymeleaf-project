@@ -4,6 +4,7 @@ import com.tfunsal.jobportal.entity.User;
 import com.tfunsal.jobportal.entity.UserType;
 import com.tfunsal.jobportal.service.UserService;
 import com.tfunsal.jobportal.service.UserTypeService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class UserController {
@@ -34,9 +36,18 @@ public class UserController {
     }
 
     @PostMapping("/register/new")
-    public String userRegistration(User user){
+    public String userRegistration(@Valid User user , Model model){
+
+        Optional<User> optionalUser = userService.getUserByEmail(user.getEmail());
+
+        if (optionalUser.isPresent()){
+            model.addAttribute("error" , "Email already registered, try to login or register with order email.");
+            List<UserType> userTypes = userTypeService.getAll();
+            model.addAttribute("getAllTypes", userTypes);
+            model.addAttribute("user" , new User());
+            return "register";
+        }
         userService.create(user);
-        System.out.println(user);
         return "dashboard";
     }
 }
