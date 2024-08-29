@@ -29,6 +29,12 @@ public class Recruiter {
     @Column(nullable = true , length = 64)
     private String profilePhoto;
 
+
+
+    public Recruiter() {
+
+    }
+
     public Recruiter(User user) {
         this.userId = user;
     }
